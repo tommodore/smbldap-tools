@@ -391,7 +391,7 @@ if (   defined( $Options{'w'} )
 }
 
 # we start to defined mail adresses if option M or T is given in option
-my @adds;
+my @addmails;
 if (@userMailLocal) {
     my @mail;
     foreach my $m (@userMailLocal) {
@@ -406,11 +406,11 @@ if (@userMailLocal) {
             push( @mail, $m . ( $domain ? '@' . $domain : '' ) );
         }
     }
-    #push( @adds, 'mailLocalAddress' => [@userMailLocal] );
-    push( @adds, 'mail' => [@mail] );
+    #push( @addmails, 'mailLocalAddress' => [@userMailLocal] );
+    push( @addmails, 'mail' => [@mail] );
 }
 if (@userMailTo) {
-    push( @adds, 'mailRoutingAddress' => [@userMailTo] );
+    push( @addmails, 'mailRoutingAddress' => [@userMailTo] );
 }
 
 
@@ -434,13 +434,13 @@ if ( defined( $Options{'b'} ) ) {
             'uidNumber'     => "$userUidNumber",
             'gidNumber'     => "$userGidNumber",
             'homeDirectory' => "$userHomeDirectory",
-            'DisplayName'   => "$displayName", 
+            'DisplayName'   => "$displayName",
             'loginShell'    => "$config{userLoginShell}",
             'userPassword'  => "{crypt}x"
         ]
     );
 my $modify =
-  $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@adds} );
+  $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@addmails} );
 
 $modify->code && die "failed to add entry: ", $modify->error;
 }
@@ -460,13 +460,13 @@ else {
             'uidNumber'     => "$userUidNumber",
             'gidNumber'     => "$userGidNumber",
             'homeDirectory' => "$userHomeDirectory",
-            'DisplayName'   => "$displayName", 
+            'DisplayName'   => "$displayName",
             'loginShell'    => "$config{userLoginShell}",
             'userPassword'  => "{crypt}x"
         ]
     );
 my $modify =
-  $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@adds} );
+  $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@addmails} );
 
 $modify->code && die "failed to add entry: ", $modify->error;
 }
@@ -633,6 +633,10 @@ EOF
         push( @adds, 'sambaLMPassword'      => "XXX" );
         push( @adds, 'sambaNTPassword'      => "XXX" );
     }
+    my $modify =
+      $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@addmails} );
+
+    $modify->code && die "failed to add entry: ", $modify->error;
 }
 
 # add AIX user
