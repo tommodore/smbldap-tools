@@ -391,6 +391,7 @@ if (   defined( $Options{'w'} )
 }
 
 # we start to defined mail adresses if option M or T is given in option
+my @adds;
 my @addmails;
 if (@userMailLocal) {
     my @mail;
@@ -634,7 +635,7 @@ EOF
         push( @adds, 'sambaNTPassword'      => "XXX" );
     }
     my $modify =
-      $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@addmails} );
+      $ldap_master->modify( "uid=$userName,$config{usersdn}", add => {@adds} );
 
     $modify->code && die "failed to add entry: ", $modify->error;
 }
